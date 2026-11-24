@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wander — open agentic trip planner</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Wander</h1>
+    <p class="sub">An open agentic website — plan a city trip with a network of agents that run in your browser.</p>
+  </div>
+  <div class="mode" id="mode-badge">Demo mode — no key</div>
+</header>
+
+<main class="layout">
+  <section class="chat-col">
+    <div class="card">
+      <h2>Ask Wander</h2>
+      <p class="hint">I plan trips to Kyoto, Lisbon, and Vancouver — destinations, stays, activities, budget, and a day-by-day itinerary. Answers come only from the site's own catalog; lodging and activity questions can also consult two linked peer networks.</p>
+      <div class="chips" id="sample-chips"></div>
+      <div class="log" id="chat-log" aria-live="polite"></div>
+      <form id="chat-form" class="composer">
+        <input id="chat-input" type="text" placeholder="Plan a 3-day trip to Kyoto for two people with a $900 budget…" autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+      <details class="trace">
+        <summary>Agent activity</summary>
+        <ol id="activity-log"></ol>
+      </details>
+    </div>
+    <div class="card">
+      <h2>How this site works</h2>
+      <ul class="explain">
+        <li><strong>Agent network:</strong> <a href="./agents/agent-manifest.json">agent-manifest.json</a> lists the <code>wander</code> network; its definition is <a href="./agents/wander.network.json">wander.network.json</a>. Peer links live in <a href="./agents/links.json">links.json</a>.</li>
+        <li><strong>Runtime:</strong> <a href="./runtime/runtime.js">runtime.js</a> runs the network in your browser. No server-side agent code.</li>
+        <li><strong>Your key, your choice:</strong> add an LLM key in AI model settings to use a real model (BYOK). Without a key, a local demo router answers from the same catalog and tools. The site host pays for nothing.</li>
+        <li><strong>Peers:</strong> lodging questions can consult <a href="./peers/stay/">Harbor Stay</a> and activity questions <a href="./peers/experience/">City Experiences</a>. Every peer contact asks you first, and your key is never sent to a peer.</li>
+        <li><strong>Nothing is booked.</strong> This site plans trips; saving keeps a plan in your browser only.</li>
+      </ul>
+    </div>
+  </section>
+
+  <aside class="side-col">
+    <div class="card">
+      <h2>Your trip</h2>
+      <div id="trip-panel"><p class="hint">No trip yet — ask Wander to plan one.</p></div>
+      <div id="cost-panel"></div>
+      <button id="save-trip-btn" class="primary" disabled>Save trip</button>
+      <button id="clear-trip-btn" class="ghost">Clear</button>
+    </div>
+
+    <div class="card">
+      <h2>AI model settings</h2>
+      <p class="hint">Bring your own key (BYOK). The key stays in this browser and is sent only to the router you choose. Delete it any time.</p>
+      <label>Router base URL <input id="llm-base" type="url" value="https://api.openai.com/v1"></label>
+      <label>Model <input id="llm-model" type="text" value="gpt-4o-mini"></label>
+      <label>API key <input id="llm-key" type="password" placeholder="sk-…" autocomplete="off"></label>
+      <label>MCP server URL (optional) <input id="mcp-url" type="url" placeholder="https://example.com/mcp"></label>
+      <div class="row">
+        <button id="llm-save" class="primary">Save and start</button>
+        <button id="llm-delete" class="ghost">Delete key</button>
+      </div>
+      <p class="hint" id="llm-status">No key saved — running the local demo router.</p>
+    </div>
+
+    <div class="card">
+      <h2>Peer networks</h2>
+      <p class="hint">Linked peers from links.json. You can also paste another peer network URL (its manifest is fetched and its network must match by exact name).</p>
+      <ul id="peer-list" class="peers"></ul>
+      <label>Load a peer network by URL
+        <input id="peer-url" type="url" placeholder="https://peer.example/agents/stay">
+      </label>
+      <label>Ask that peer
+        <input id="peer-question" type="text" placeholder="What stays do you have in Kyoto under $160 a night?">
+      </label>
+      <button id="peer-load" class="primary">Load peer and ask</button>
+      <p class="hint" id="peer-status"></p>
+      <div id="peer-answer" class="hint"></div>
+    </div>
+  </aside>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card">
+    <h3 id="modal-title">Confirm</h3>
+    <p id="modal-body"></p>
+    <div class="row">
+      <button id="modal-yes" class="primary">Allow</button>
+      <button id="modal-no" class="ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
